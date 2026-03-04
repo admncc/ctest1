@@ -95,6 +95,16 @@ db.exec(`
   );
 `);
 
+// ─── Migrations (add columns to existing DBs) ─────────────────────────────────
+
+const migrations = [
+  "ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0",
+  "ALTER TABLE users ADD COLUMN banned INTEGER DEFAULT 0",
+];
+for (const sql of migrations) {
+  try { db.exec(sql); } catch { /* column already exists, skip */ }
+}
+
 // ─── Seed categories ──────────────────────────────────────────────────────────
 
 const categoryCount = db.prepare('SELECT COUNT(*) as c FROM categories').get().c;
