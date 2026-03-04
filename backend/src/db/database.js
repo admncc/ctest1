@@ -118,8 +118,19 @@ if (categoryCount === 0) {
   insertMany(categories);
 }
 
-// ─── Auto-promote admin via env ───────────────────────────────────────────────
+// ─── Seed default admin ───────────────────────────────────────────────────────
 
+const bcrypt = require('bcryptjs');
+const adminExists = db.prepare("SELECT id FROM users WHERE email='deine@adminmail.de'").get();
+if (!adminExists) {
+  const hashed = bcrypt.hashSync('testadmin', 10);
+  db.prepare(
+    "INSERT INTO users (email, password, name, role, is_admin) VALUES ('deine@adminmail.de', ?, 'Admin', 'customer', 1)"
+  ).run(hashed);
+  console.log('✅ Standard-Admin erstellt: deine@adminmail.de / testadmin');
+}
+
+// Also support ADMIN_EMAIL env override
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 if (ADMIN_EMAIL) {
   db.prepare('UPDATE users SET is_admin=1 WHERE email=?').run(ADMIN_EMAIL.toLowerCase());
