@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authenticate, (req, res) => {
   const user = db.prepare(
-    'SELECT id, email, name, role, location, bio, phone, avatar, created_at FROM users WHERE id = ?'
+    'SELECT id, email, name, role, location, bio, phone, avatar, is_admin, banned, created_at FROM users WHERE id = ?'
   ).get(req.user.id);
 
   if (!user) return res.status(404).json({ error: 'Benutzer nicht gefunden' });
