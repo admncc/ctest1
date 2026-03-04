@@ -25,4 +25,11 @@ function requireRole(...roles) {
   };
 }
 
-module.exports = { authenticate, requireRole, JWT_SECRET };
+function requireAdmin(req, res, next) {
+  const db = require('../db/database');
+  const user = db.prepare('SELECT is_admin, banned FROM users WHERE id=?').get(req.user?.id);
+  if (!user?.is_admin) return res.status(403).json({ error: 'Admin-Berechtigung erforderlich' });
+  next();
+}
+
+module.exports = { authenticate, requireRole, requireAdmin, JWT_SECRET };

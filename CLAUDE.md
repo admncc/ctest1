@@ -52,7 +52,13 @@ customers (Auftraggeber) with craftsmen/tradespeople (Handwerker) in Germany.
 │   │       ├── PostJob.jsx       # Create new job (customer only)
 │   │       ├── Dashboard.jsx     # User dashboard with stats
 │   │       ├── Profile.jsx       # Public profile + edit own profile
-│   │       └── Messages.jsx      # Conversation list + chat
+│   │       ├── Messages.jsx      # Conversation list + chat
+│   │       └── admin/
+│   │           ├── AdminLayout.jsx     # Sidebar layout for admin
+│   │           ├── AdminDashboard.jsx  # Stats + charts
+│   │           ├── AdminUsers.jsx      # User management (ban/delete/promote)
+│   │           ├── AdminJobs.jsx       # Job management (status/delete)
+│   │           └── AdminCategories.jsx # Category CRUD
 │   ├── vite.config.js            # Vite config with /api proxy to backend:3001
 │   ├── Dockerfile                # Multi-stage build → nginx
 │   ├── nginx.conf                # SPA fallback + /api proxy
@@ -123,12 +129,24 @@ All API routes are prefixed with `/api`.
 | GET | /messages/:userId | ✓ | Messages with a user |
 | POST | /messages | ✓ | Send message |
 | GET | /messages/unread/count | ✓ | Unread count |
+| GET | /admin/stats | ✓ admin | Platform statistics |
+| GET | /admin/users | ✓ admin | List all users (search, filter, paginate) |
+| PUT | /admin/users/:id/ban | ✓ admin | Ban / unban user |
+| PUT | /admin/users/:id/admin | ✓ admin | Grant / revoke admin rights |
+| DELETE | /admin/users/:id | ✓ admin | Delete user |
+| GET | /admin/jobs | ✓ admin | List all jobs (search, filter, paginate) |
+| PUT | /admin/jobs/:id/status | ✓ admin | Change job status |
+| DELETE | /admin/jobs/:id | ✓ admin | Delete job |
+| GET | /admin/categories | ✓ admin | List categories with job counts |
+| POST | /admin/categories | ✓ admin | Create category |
+| PUT | /admin/categories/:id | ✓ admin | Update category |
+| DELETE | /admin/categories/:id | ✓ admin | Delete category (if no jobs) |
 
 ## Database Schema
 
 SQLite tables (defined in `backend/src/db/database.js`):
 
-- **users** — id, email, password, name, role (`customer`|`craftsman`), location, bio, phone, avatar
+- **users** — id, email, password, name, role (`customer`|`craftsman`), location, bio, phone, avatar, is_admin, banned
 - **categories** — id, name, icon (emoji), slug
 - **craftsman_profiles** — user_id (1:1), specializations (JSON array), hourly_rate, service_radius
 - **jobs** — id, title, description, category_id, location, budget_min, budget_max, status (`open`|`in_progress`|`completed`|`cancelled`), customer_id, accepted_bid_id
@@ -164,6 +182,7 @@ PORT=3001
 JWT_SECRET=change_this_in_production   # Required to change for production
 DB_PATH=/app/data/platform.db          # SQLite file location
 NODE_ENV=development
+ADMIN_EMAIL=deine@email.de  # This user gets auto-promoted to admin on startup
 
 # frontend (vite.config.js proxy handles this in dev)
 # In production, set VITE_API_URL if not using nginx proxy

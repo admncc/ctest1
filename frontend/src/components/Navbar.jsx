@@ -27,6 +27,11 @@ export default function Navbar() {
               <Link to="/dashboard">
                 <span>📊</span> <span>Dashboard</span>
               </Link>
+              {user.is_admin && (
+                <Link to="/admin" style={{ color: 'var(--accent-dark)', fontWeight: 700 }}>
+                  <span>⚙️</span> <span>Admin</span>
+                </Link>
+              )}
               {user.role === 'customer' && (
                 <Link to="/jobs/new">
                   <span>➕</span> <span>Auftrag</span>

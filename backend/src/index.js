@@ -21,6 +21,7 @@ app.use('/api/jobs',     require('./routes/jobs'));
 app.use('/api/bids',     require('./routes/bids'));
 app.use('/api/reviews',  require('./routes/reviews'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/admin',   require('./routes/admin'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));

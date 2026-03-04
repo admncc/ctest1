@@ -27,6 +27,8 @@ db.exec(`
     bio         TEXT,
     phone       TEXT,
     avatar      TEXT,
+    is_admin    INTEGER DEFAULT 0,
+    banned      INTEGER DEFAULT 0,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -114,6 +116,13 @@ if (categoryCount === 0) {
   ];
   const insertMany = db.transaction((rows) => rows.forEach(r => insert.run(...r)));
   insertMany(categories);
+}
+
+// ─── Auto-promote admin via env ───────────────────────────────────────────────
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+if (ADMIN_EMAIL) {
+  db.prepare('UPDATE users SET is_admin=1 WHERE email=?').run(ADMIN_EMAIL.toLowerCase());
 }
 
 module.exports = db;
